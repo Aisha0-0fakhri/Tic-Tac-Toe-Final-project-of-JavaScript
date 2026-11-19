@@ -1,0 +1,295 @@
+ :root {
+      --bg: #eef1f4;
+      --surface: #ffffff;
+      --line: #cfd6de;
+      --fg: #18222d;
+      --muted: #5b6876;
+      --x: #0b7a75;
+      --o: #c76a00;
+      --win-x: #dff3f1;
+      --win-o: #fbebd5;
+      --focus: #2455d6;
+      --overlay: rgba(10, 18, 26, 0.55);
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Dark theme: follows the system unless the user picked light */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #11171d;
+        --surface: #1a232c;
+        --line: #2f3c49;
+        --fg: #e7edf3;
+        --muted: #9aa8b6;
+        --x: #3fc7bf;
+        --o: #f0a24a;
+        --win-x: #16423f;
+        --win-o: #4a3216;
+        --focus: #8fb0ff;
+        --overlay: rgba(0, 0, 0, 0.65);
+        color-scheme: dark;
+      }
+    }
+
+    /* Dark theme: picked with the toggle button */
+    :root[data-theme="dark"] {
+      --bg: #11171d;
+      --surface: #1a232c;
+      --line: #2f3c49;
+      --fg: #e7edf3;
+      --muted: #9aa8b6;
+      --x: #3fc7bf;
+      --o: #f0a24a;
+      --win-x: #16423f;
+      --win-o: #4a3216;
+      --focus: #8fb0ff;
+      --overlay: rgba(0, 0, 0, 0.65);
+      color-scheme: dark;
+    }
+
+    * {
+       box-sizing: border-box; 
+      }
+    [hidden] { 
+      display: none !important;
+     }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      padding: 20px 16px;
+      min-height: 100vh;
+    }
+
+    main {
+      max-width: 390px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    button { font-family: var(--font); }
+
+    .theme-btn {
+      font-weight: 600;
+      font-size: 0.78rem;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--fg);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Name entry */
+    .setup {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .setup h2 { margin: 0; font-size: 1.05rem; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .field label b.x { color: var(--x); }
+    .field label b.o { color: var(--o); }
+
+    .field input {
+      font: 500 1rem var(--font);
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      color: var(--fg);
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Status line: whose turn it is */
+    .status {
+      font-weight: 600;
+      font-size: 1.15rem;
+      min-height: 1.5em;
+      text-align: center;
+    }
+
+    .mk { font-weight: 700; }
+    .mk.x { color: var(--x); }
+    .mk.o { color: var(--o); }
+
+    /* Board */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 12vw, 3.9rem);
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      color: var(--fg);
+      transition: background 0.12s ease;
+    }
+
+    .cell:hover:not(:disabled) { background: var(--bg); }
+    .cell:disabled { cursor: default; }
+    .cell.x { color: var(--x); }
+    .cell.o { color: var(--o); }
+    .cell.win.x { background: var(--win-x); border-color: var(--x); }
+    .cell.win.o { background: var(--win-o); border-color: var(--o); }
+    .cell .m { animation: pop 0.16s ease-out; }
+
+    @keyframes pop {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* Scoreboard */
+    .score {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .score > div {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .score .n {
+      font-weight: 700;
+      font-size: 1.3rem;
+      font-variant-numeric: tabular-nums;
+      display: block;
+    }
+
+    .score .x-color { color: var(--x); }
+    .score .o-color { color: var(--o); }
+
+    .score .l {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Buttons */
+    .actions { display: flex; gap: 8px; }
+
+    .btn {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 11px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--fg);
+    }
+
+    .btn.primary {
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Result pop-up */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      z-index: 10;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 18px;
+      width: 100%;
+      max-width: 300px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: pop 0.18s ease-out;
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      overflow-wrap: anywhere;
+    }
+
+    .modal h2.x { color: var(--x); }
+    .modal h2.o { color: var(--o); }
+
+    .modal p {
+      margin: 0 0 6px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .modal .actions { flex-direction: column; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cell .m, .modal { animation: none; }
+      .cell { transition: none; }
+    }
